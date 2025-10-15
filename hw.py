@@ -8,6 +8,8 @@ def main(page: ft.Page):
    page.theme_mode = ft.ThemeMode.LIGHT
 
    greeting_text = ft.Text("Hello World")
+   greeting_history  = []
+   history_text = ft.Text("История текстов:")
    
    def on_button_click(_):
       name = name_input.value.strip()
@@ -35,6 +37,9 @@ def main(page: ft.Page):
          name_input.value =''
          age_input.value = ''
 
+         greeting_history.append(f'{hour} - {name}')
+         history_text.value = "История приветствий:\n" + "\n".join(greeting_history)
+
 
       else:
          print('не введино')
@@ -45,7 +50,22 @@ def main(page: ft.Page):
    name_input = ft.TextField(label='Введите имя:', on_submit=on_button_click)
    age_input = ft.TextField(label='Введите возраст', on_submit=on_button_click)
    name_button = ft.ElevatedButton('send', on_click=on_button_click)
-   
-   page.add(greeting_text, name_input, age_input, name_button)
 
+
+   def pop_history(_):
+      if greeting_history:  
+         greeting_history.pop()
+         history_text.value = "история приветствий:\n" + "\n".join(greeting_history)
+      
+      else: 
+         history_text.value = "История пуста!"
+
+      page.update()
+
+   pop_button = ft.IconButton(icon=ft.Icons.DELETE, on_click=pop_history)
+   
+   page.add(greeting_text, name_input, age_input,
+            ft.Row([name_button, pop_button], alignment=ft.MainAxisAlignment.SPACE_EVENLY),
+            ft.Row([history_text], alignment=ft.MainAxisAlignment.START)
+   )
 ft.app(target=main)
